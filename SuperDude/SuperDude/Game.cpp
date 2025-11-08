@@ -54,7 +54,7 @@ void Game::handleEvents()
 
 	// Move paddles
 	const Uint8* state = SDL_GetKeyboardState(NULL);
-	if (state[SDL_SCANCODE_W] && pY > 0 && Grounded) {
+	if (state[SDL_SCANCODE_SPACE] && pY > 0 && Grounded) {
 		dY -= PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_S] && pY + PADDLE_HEIGHT < SCREEN_HEIGHT) {
