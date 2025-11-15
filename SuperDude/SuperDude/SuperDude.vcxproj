@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
