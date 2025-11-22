@@ -12,13 +12,13 @@
 const int FPS = 60;
 const int FRAME_DELAY = 1000 / FPS;
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 // game elements
-const int PADDLE_WIDTH = 20;
+const int PADDLE_WIDTH = 70;
 const int PADDLE_HEIGHT = 80;
-const int PADDLE_SPEED = 5;
+const double PADDLE_SPEED = 6.8;
 
 const int BALL_SIZE = 10;
 const int BALL_SPEED = 5;
