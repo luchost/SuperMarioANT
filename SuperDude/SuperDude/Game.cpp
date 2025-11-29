@@ -4,13 +4,24 @@
 #include"Collision.hpp"
 
 #include<vector>
+
+const int SPRITE_COLS = 5;
+const int SPRITE_ROWS = 5;
+
+const int tileW = 1000 / SPRITE_COLS;
+const int tileH = 1080 / SPRITE_ROWS;
+
 SDL_Texture* playertex;
 SDL_Texture* blocktex;
+SDL_Texture* mariotex;
 double pY = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 double pX = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 bool Grounded = false;
 Platform* platforms[4];
+SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
 int rotation = 1;
+int cycle = 0;
+bool pressed = false;
 //blok x =171 y=0;	160 160
 //Mario 0 491 140 200
 double dY = 0;
@@ -67,8 +78,13 @@ bool Game::init()
 	platforms[3] = new QuestionBox;
 	platforms[3]->setTex(blocktex);
 	platforms[3]->setCrop({ 171 + 760,0,160,160 });
-	platforms[3]->setPos({ 1000,SCREEN_HEIGHT-450,80,80 });
-	playertex = TextureManager::LoadTexture("assets/rickroll.png", renderer);
+	platforms[3]->setPos({ 1000,SCREEN_HEIGHT-390,80,80 });
+
+	playertex = TextureManager::LoadTexture("assets/iu_.png", renderer);
+
+
+	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
+
 	return isRunning = true;
 }
 
@@ -96,18 +112,63 @@ void Game::handleEvents()
 	if (state[SDL_SCANCODE_A] && pX > 0) {
 		pX -= PADDLE_SPEED;
 		rotation = -1;
+		pressed = true;
+		if (dY >= 0) {
+			if (cycle < 21) {
+				if (cycle % 7 == 0) {
+					MarioCrop.x += tileW;
+				}
+				cycle++;
+			}
+			else {
+				cycle = 0;
+				MarioCrop.x = tileW;
+			}
+		}
 	}
+	
 	if (state[SDL_SCANCODE_D] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
 		pX += PADDLE_SPEED;
 		rotation = 1;
+		pressed = true;
+		if (dY >= 0) {
+			if (cycle < 21) {
+				if (cycle % 7 == 0) {
+					MarioCrop.x += tileW;
+				}
+				cycle++;
+			}
+			else {
+				cycle = 0;
+				MarioCrop.x = tileW;
+			}
+		}
 	}
 }
 
 void Game::update()
 {
+	if (Grounded) {
+		MarioCrop.y = tileH;
+	
+	}
+
+
+	if (pressed) {
+		pressed = false;
+	}
+	else {
+		cycle = 0;
+		MarioCrop.x = tileW;
+	}
+
+	
 	Grounded = false;
 	pY += dY;
 	dY += 0.25;
+	if (dY < 0) {
+		MarioCrop = { tileW,tileH * 2,tileW,tileH -40 };
+	}
 	SDL_Rect paddle1 = { pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT };
 		
 	for (int i = 0; i < sizeof(platforms)/sizeof(platforms[0]); i++) {
@@ -172,13 +233,12 @@ void Game::render()
 	SDL_RenderCopy(renderer, fllor.getTex(), &crop, &tmp);
 
 	SDL_Rect paddle1 = {pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT};
-	SDL_Rect mario = { 0,491,140,200 };
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	if (rotation == -1) {
-		SDL_RenderCopyEx(renderer, blocktex, &mario, &paddle1, 0, NULL, SDL_FLIP_HORIZONTAL);
+		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &paddle1, 0, NULL, SDL_FLIP_HORIZONTAL);
 	}
 	else {
-		SDL_RenderCopyEx(renderer, blocktex, &mario, &paddle1, 0, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &paddle1, 0, NULL, SDL_FLIP_NONE);
 	}
 
 
