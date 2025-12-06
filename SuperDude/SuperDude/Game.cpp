@@ -2,7 +2,6 @@
 #include "TextureManager.h"
 #include "Platform.hpp"
 #include"Collision.hpp"
-
 #include<vector>
 
 const int SPRITE_COLS = 5;
@@ -22,10 +21,10 @@ SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
 int rotation = 1;
 int cycle = 0;
 bool pressed = false;
-//blok x =171 y=0;	160 160
-//Mario 0 491 140 200
 double dY = 0;
 Platform fllor;
+int score = 0;
+vector<Coin*> coins;
 
 
 Game::Game() {
@@ -75,7 +74,7 @@ bool Game::init()
 	platforms[0]->setCrop(tm);
 	platforms[1]->setCrop(tm);
 	platforms[2]->setCrop(tm);
-	platforms[3] = new QuestionBox;
+	platforms[3] = new QuestionBox(coins);
 	platforms[3]->setTex(blocktex);
 	platforms[3]->setCrop({ 171 + 760,0,160,160 });
 	platforms[3]->setPos({ 1000,SCREEN_HEIGHT-390,80,80 });
@@ -107,7 +106,7 @@ void Game::handleEvents()
 		dY -= PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_S] && pY + PADDLE_HEIGHT < SCREEN_HEIGHT) {
-		dY += PADDLE_SPEED;
+		//dY += PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_A] && pX > 0) {
 		pX -= PADDLE_SPEED;
@@ -215,6 +214,12 @@ void Game::update()
 			pY = fllor.getPos().y - PADDLE_HEIGHT;
 		}
 	}
+	for (int i = 0; i < coins.size(); i++) {
+		if (!coins[i]->Move()) {
+			score += 100;
+			coins.erase(coins.begin() + i);
+		}
+	}
 }
 
 void Game::render()
@@ -223,6 +228,9 @@ void Game::render()
 	SDL_RenderClear(renderer);
 
 	SDL_RenderCopy(renderer, playertex, NULL, NULL);
+	for (int i = 0; i < coins.size(); i++) {
+		SDL_RenderCopy(renderer, blocktex, &coins[i]->crop, &coins[i]->pos);
+	}
 	for (int i = 0; i < sizeof(platforms) / sizeof(platforms[0]); i++) {
 		SDL_Rect tmp = platforms[i]->getPos();
 		SDL_Rect crop = platforms[i]->getCrop();
