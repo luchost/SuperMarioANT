@@ -10,13 +10,17 @@ const int SPRITE_ROWS = 5;
 const int tileW = 1000 / SPRITE_COLS;
 const int tileH = 1080 / SPRITE_ROWS;
 
+Mix_Music* music;
 SDL_Texture* playertex;
 SDL_Texture* blocktex;
 SDL_Texture* mariotex;
 double pY = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 double pX = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+double cameraX = 0;
+double cameraY = 0;
+
 bool Grounded = false;
-Platform* platforms[4];
+Platform* platforms[7];
 SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
 int rotation = 1;
 int cycle = 0;
@@ -54,7 +58,12 @@ bool Game::init()
 		std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
-	
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		return false;
+	}
+
+
 	blocktex = TextureManager::LoadTexture("assets/blocks.png", renderer);
 	SDL_Rect tmp = { 0,SCREEN_HEIGHT-200,SCREEN_WIDTH,40 };
 	fllor.setPos(tmp);
@@ -64,16 +73,30 @@ bool Game::init()
 	platforms[0] = new Platform;
 	platforms[1] = new Platform;
 	platforms[2] = new Platform;
+	platforms[4] = new Platform;
+	platforms[5] = new Platform;
+	platforms[6] = new Platform;
 
-		platforms[0]->setPos({ 0,300,70,30 });
+	platforms[0]->setPos({ 0,300,70,30 });
 	platforms[1]->setPos({ 130,250,100,30 });
 	platforms[2]->setPos({ 450,350,120,30 });
+	platforms[4]->setPos({ 1800,300,70,30 });
+	platforms[5]->setPos({ 3000,250,100,30 });
+	platforms[6]->setPos({ 920,350,120,30 });
+
 	platforms[0]->setTex(blocktex);
 	platforms[1]->setTex(blocktex);
 	platforms[2]->setTex(blocktex);
 	platforms[0]->setCrop(tm);
 	platforms[1]->setCrop(tm);
 	platforms[2]->setCrop(tm);
+	platforms[4]->setCrop(tm);
+	platforms[5]->setCrop(tm);
+	platforms[6]->setCrop(tm);
+	platforms[4]->setTex(blocktex);
+	platforms[5]->setTex(blocktex);
+	platforms[6]->setTex(blocktex);
+
 	platforms[3] = new QuestionBox(coins);
 	platforms[3]->setTex(blocktex);
 	platforms[3]->setCrop({ 171 + 760,0,160,160 });
@@ -81,6 +104,7 @@ bool Game::init()
 
 	playertex = TextureManager::LoadTexture("assets/iu_.png", renderer);
 
+	music = Mix_LoadMUS("assets/Song.wav");
 
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
 
@@ -104,12 +128,14 @@ void Game::handleEvents()
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 	if (state[SDL_SCANCODE_W] && pY > 0 && Grounded) {
 		dY -= PADDLE_SPEED;
+		cameraY -= PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_S] && pY + PADDLE_HEIGHT < SCREEN_HEIGHT) {
 		//dY += PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_A] && pX > 0) {
 		pX -= PADDLE_SPEED;
+		cameraX -= PADDLE_SPEED;
 		rotation = -1;
 		pressed = true;
 		if (dY >= 0) {
@@ -128,6 +154,7 @@ void Game::handleEvents()
 	
 	if (state[SDL_SCANCODE_D] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
 		pX += PADDLE_SPEED;
+		cameraX += PADDLE_SPEED;
 		rotation = 1;
 		pressed = true;
 		if (dY >= 0) {
@@ -151,8 +178,11 @@ void Game::update()
 		MarioCrop.y = tileH;
 	
 	}
-
-
+	
+	if (Mix_PlayingMusic() == 0)
+	{
+		Mix_PlayMusic(music, -1);
+	}
 	if (pressed) {
 		pressed = false;
 	}
@@ -161,7 +191,8 @@ void Game::update()
 		MarioCrop.x = tileW;
 	}
 
-	
+	//cameraY += dY ;
+
 	Grounded = false;
 	pY += dY;
 	dY += 0.25;
@@ -205,6 +236,8 @@ void Game::update()
 			
 			}
 		}
+		
+		
 	}
 	if (Collision::Collide(paddle1, fllor.getPos())) {
 		Grounded = true;
@@ -234,7 +267,10 @@ void Game::render()
 	for (int i = 0; i < sizeof(platforms) / sizeof(platforms[0]); i++) {
 		SDL_Rect tmp = platforms[i]->getPos();
 		SDL_Rect crop = platforms[i]->getCrop();
+
+		
 		SDL_RenderCopy(renderer, platforms[i]->getTex(), &crop, &tmp);
+		
 	}
 	SDL_Rect tmp = fllor.getPos();
 	SDL_Rect crop = fllor.getCrop();
@@ -251,6 +287,7 @@ void Game::render()
 
 
 	SDL_RenderPresent(renderer);
+	
 }
 
 void Game::quit() {
