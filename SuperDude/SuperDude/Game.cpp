@@ -11,6 +11,11 @@ const int tileW = 1000 / SPRITE_COLS;
 const int tileH = 1080 / SPRITE_ROWS;
 
 Mix_Music* music;
+Mix_Chunk* coin;
+Mix_Chunk* jump;
+Mix_Chunk* pasta;
+
+
 SDL_Texture* playertex;
 SDL_Texture* blocktex;
 SDL_Texture* mariotex;
@@ -104,9 +109,15 @@ bool Game::init()
 
 	playertex = TextureManager::LoadTexture("assets/iu_.png", renderer);
 
-	music = Mix_LoadMUS("assets/Song.wav");
+	music = Mix_LoadMUS("assets/Jinglle.mp3");
+
+	coin = Mix_LoadWAV("assets/Coin(1).wav");
+	jump = Mix_LoadWAV("assets/Jump.wav");
+	pasta = Mix_LoadWAV("assets/Pasta.wav");
+
 
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
+	Mix_VolumeMusic(20);
 
 	return isRunning = true;
 }
@@ -129,6 +140,7 @@ void Game::handleEvents()
 	if (state[SDL_SCANCODE_W] && pY > 0 && Grounded) {
 		dY -= PADDLE_SPEED;
 		cameraY -= PADDLE_SPEED;
+		Mix_PlayChannel(-1, pasta, 0);
 	}
 	if (state[SDL_SCANCODE_S] && pY + PADDLE_HEIGHT < SCREEN_HEIGHT) {
 		//dY += PADDLE_SPEED;
@@ -248,6 +260,7 @@ void Game::update()
 		}
 	}
 	for (int i = 0; i < coins.size(); i++) {
+		Mix_PlayChannel(-1, coin, 0);
 		if (!coins[i]->Move()) {
 			score += 100;
 			coins.erase(coins.begin() + i);
