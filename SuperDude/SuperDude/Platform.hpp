@@ -73,6 +73,7 @@ public:
 		this->coin = &coin;
 	
 	}
+
 	void OnCollision() override {
 		coin->push_back(new Coin({ pos.x,pos.y - 90,163/4,163/4 }));
 			std::cout << "Question block";

@@ -6,7 +6,7 @@ int main(int argc, char** argv) {
 
     Game* game = new Game();
     if (game->init() == false) return 1;
-
+    game->StartMenu();
     while (game->running()) {
         frameStart = SDL_GetTicks();
         

@@ -3,16 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Button.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\Button.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Platform.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\Platform.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\Game.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\TextureManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\TextureManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Platform.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|solutionrelative:SuperDude\\Platform.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B9275399-177E-412C-B9E8-5AF4E505D6D3}|SuperDude\\SuperDude.vcxproj|C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Collision.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -30,11 +46,63 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "TextureManager.cpp",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.cpp",
+              "RelativeDocumentMoniker": "SuperDude\\TextureManager.cpp",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.cpp",
+              "RelativeToolTip": "SuperDude\\TextureManager.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-01-10T13:39:50.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TextureManager.h",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.h",
+              "RelativeDocumentMoniker": "SuperDude\\TextureManager.h",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\TextureManager.h",
+              "RelativeToolTip": "SuperDude\\TextureManager.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2026-01-10T13:38:19.479Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Button.hpp",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Button.hpp",
+              "RelativeDocumentMoniker": "SuperDude\\Button.hpp",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Button.hpp",
+              "RelativeToolTip": "SuperDude\\Button.hpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2026-01-10T13:26:19.49Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\main.cpp",
+              "RelativeDocumentMoniker": "SuperDude\\main.cpp",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\main.cpp",
+              "RelativeToolTip": "SuperDude\\main.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-01-10T12:59:53.767Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "Test.hpp",
               "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Test.hpp",
               "RelativeDocumentMoniker": "SuperDude\\Test.hpp",
@@ -46,7 +114,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "Collision.hpp",
               "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Collision.hpp",
               "RelativeDocumentMoniker": "SuperDude\\Collision.hpp",
@@ -54,41 +122,44 @@
               "RelativeToolTip": "SuperDude\\Collision.hpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-15T13:00:18.543Z"
+              "WhenOpened": "2025-11-15T13:00:18.543Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Game.h",
               "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.h",
               "RelativeDocumentMoniker": "SuperDude\\Game.h",
               "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.h",
               "RelativeToolTip": "SuperDude\\Game.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACAAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-15T12:22:07.722Z"
+              "WhenOpened": "2025-11-15T12:22:07.722Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "Platform.hpp",
               "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Platform.hpp",
               "RelativeDocumentMoniker": "SuperDude\\Platform.hpp",
               "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Platform.hpp",
               "RelativeToolTip": "SuperDude\\Platform.hpp",
-              "ViewState": "AgIAAEYAAAAAAAAAAAAAAEsAAAAGAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAE4AAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-15T12:10:46.682Z"
+              "WhenOpened": "2025-11-15T12:10:46.682Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Game.cpp",
               "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.cpp",
               "RelativeDocumentMoniker": "SuperDude\\Game.cpp",
               "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.cpp",
               "RelativeToolTip": "SuperDude\\Game.cpp",
-              "ViewState": "AgIAABgBAAAAAAAAAAAAAHEAAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAAEYAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-08T14:41:44.29Z",
               "EditorCaption": ""

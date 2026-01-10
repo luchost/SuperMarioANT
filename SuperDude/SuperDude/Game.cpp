@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include "Platform.hpp"
 #include"Collision.hpp"
+#include "Button.hpp"
 #include<vector>
 
 const int SPRITE_COLS = 5;
@@ -14,18 +15,22 @@ Mix_Music* music;
 Mix_Chunk* coin;
 Mix_Chunk* jump;
 Mix_Chunk* pasta;
+Mix_Chunk* dash;
 
-
+SDL_Texture* test;
 SDL_Texture* playertex;
 SDL_Texture* blocktex;
 SDL_Texture* mariotex;
+
+
 double pY = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 double pX = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
 double cameraX = 0;
 double cameraY = 0;
 
 bool Grounded = false;
-Platform* platforms[7];
+vector<Platform*> platforms;
 SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
 int rotation = 1;
 int cycle = 0;
@@ -33,14 +38,45 @@ bool pressed = false;
 double dY = 0;
 Platform fllor;
 int score = 0;
+int startTicks = SDL_GetTicks();
+bool cooldown = false;
 vector<Coin*> coins;
-
+TTF_Font* font;
 
 Game::Game() {
 
 }
 Game::~Game() {
 
+}
+void Game::StartMenu() {
+	SDL_Event event;
+	bool start = false;
+	int x, y;
+	Button startButton({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,100,10 }, font, "Start", renderer);
+	while (!start) {
+		do {
+			SDL_PollEvent(&event);
+			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_RenderClear(renderer);
+
+			SDL_RenderCopy(renderer, startButton.tex, NULL, &startButton.pos);
+			SDL_RenderPresent(renderer);
+		} while (event.type != SDL_MOUSEBUTTONDOWN);
+		
+		if (event.button.button == SDL_BUTTON_LEFT) {
+			SDL_GetMouseState(&x, &y);
+			SDL_Rect tmp = { x,y,0,0 };
+			if (Collision::Collide(tmp, startButton.pos)) {
+				startButton.OnClick();
+				start = true;
+			}
+
+
+		}
+
+
+	}
 }
 
 bool Game::init()
@@ -52,7 +88,7 @@ bool Game::init()
 		return false;
 	}
 
-	window = SDL_CreateWindow("SuperDude", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("SuperDude", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == nullptr) {
 		std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		return false;
@@ -63,31 +99,36 @@ bool Game::init()
 		std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
+
+	Mix_Init(MIX_INIT_MP3);
 	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
 	{
 		return false;
 	}
 
+	TTF_Init();
+
+	font = TTF_OpenFont("assets/Font.ttf", 30);
 
 	blocktex = TextureManager::LoadTexture("assets/blocks.png", renderer);
-	SDL_Rect tmp = { 0,SCREEN_HEIGHT-200,SCREEN_WIDTH,40 };
+	SDL_Rect tmp = { 0,SCREEN_HEIGHT-220,SCREEN_WIDTH,40 };
 	fllor.setPos(tmp);
 	SDL_Rect tm = { 171 + 360,0,160,160 };
 	fllor.setCrop(tm);
 	fllor.setTex(blocktex);
-	platforms[0] = new Platform;
-	platforms[1] = new Platform;
-	platforms[2] = new Platform;
-	platforms[4] = new Platform;
-	platforms[5] = new Platform;
-	platforms[6] = new Platform;
+	platforms.push_back( new Platform);
+	platforms.push_back(new Platform);
+	platforms.push_back(new Platform);
+	platforms.push_back(new Platform);
+	platforms.push_back(new Platform);
+	platforms.push_back(new Platform);
 
 	platforms[0]->setPos({ 0,300,70,30 });
 	platforms[1]->setPos({ 130,250,100,30 });
 	platforms[2]->setPos({ 450,350,120,30 });
 	platforms[4]->setPos({ 1800,300,70,30 });
 	platforms[5]->setPos({ 3000,250,100,30 });
-	platforms[6]->setPos({ 920,350,120,30 });
+	platforms[3]->setPos({ 920,350,120,30 });
 
 	platforms[0]->setTex(blocktex);
 	platforms[1]->setTex(blocktex);
@@ -97,25 +138,32 @@ bool Game::init()
 	platforms[2]->setCrop(tm);
 	platforms[4]->setCrop(tm);
 	platforms[5]->setCrop(tm);
-	platforms[6]->setCrop(tm);
+	platforms[3]->setCrop(tm);
 	platforms[4]->setTex(blocktex);
 	platforms[5]->setTex(blocktex);
-	platforms[6]->setTex(blocktex);
-
-	platforms[3] = new QuestionBox(coins);
 	platforms[3]->setTex(blocktex);
-	platforms[3]->setCrop({ 171 + 760,0,160,160 });
-	platforms[3]->setPos({ 1000,SCREEN_HEIGHT-390,80,80 });
 
+	platforms.push_back(new QuestionBox(coins));
+	platforms[6]->setTex(blocktex);
+	platforms[6]->setCrop({ 171 + 760,0,160,160 });
+	platforms[6]->setPos({ 1000,SCREEN_HEIGHT-390,80,80 });
+
+	platforms.push_back(new Platform);
+	platforms[7]->setTex(blocktex);
+	platforms[7]->setCrop({ 171 + 760,0,160,160 });
+	platforms[7]->setPos({ 100,SCREEN_HEIGHT - 300,80,80 });
+
+	
 	playertex = TextureManager::LoadTexture("assets/iu_.png", renderer);
 
 	music = Mix_LoadMUS("assets/Jinglle.mp3");
 
 	coin = Mix_LoadWAV("assets/Coin(1).wav");
 	jump = Mix_LoadWAV("assets/Jump.wav");
+	dash = Mix_LoadWAV("assets/Dash.wav");
 	pasta = Mix_LoadWAV("assets/Pasta.wav");
 
-
+	test = TextureManager::LoadTextureText(font, "HEllo its a me mario", renderer);
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
 	Mix_VolumeMusic(20);
 
@@ -138,7 +186,7 @@ void Game::handleEvents()
 	// Move paddles
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 	if (state[SDL_SCANCODE_W] && pY > 0 && Grounded) {
-		dY -= PADDLE_SPEED;
+		dY -= PADDLE_SPEED*2;
 		cameraY -= PADDLE_SPEED;
 		Mix_PlayChannel(-1, pasta, 0);
 	}
@@ -146,11 +194,12 @@ void Game::handleEvents()
 		//dY += PADDLE_SPEED;
 	}
 	if (state[SDL_SCANCODE_A] && pX > 0) {
-		pX -= PADDLE_SPEED;
-		cameraX -= PADDLE_SPEED;
+		for (int i = 0; i < platforms.size(); i++) {
+			platforms[i]->setPos({ platforms[i]->getPos().x + int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
+		}
 		rotation = -1;
 		pressed = true;
-		if (dY >= 0) {
+		if (dY == 0) {
 			if (cycle < 21) {
 				if (cycle % 7 == 0) {
 					MarioCrop.x += tileW;
@@ -165,11 +214,12 @@ void Game::handleEvents()
 	}
 	
 	if (state[SDL_SCANCODE_D] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
-		pX += PADDLE_SPEED;
-		cameraX += PADDLE_SPEED;
+		for (int i = 0; i < platforms.size(); i++) {
+			platforms[i]->setPos({ platforms[i]->getPos().x - int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
+		}
 		rotation = 1;
 		pressed = true;
-		if (dY >= 0) {
+		if (dY == 0) {
 			if (cycle < 21) {
 				if (cycle % 7 == 0) {
 					MarioCrop.x += tileW;
@@ -182,10 +232,66 @@ void Game::handleEvents()
 			}
 		}
 	}
+	if (!cooldown) {
+
+		if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_LSHIFT] && pX > 0) {
+			cooldown = true;
+			startTicks = SDL_GetTicks();
+			for (int i = 0; i < platforms.size(); i++) {
+				platforms[i]->setPos({ platforms[i]->getPos().x + int(PADDLE_SPEED * 10),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
+			}
+			rotation = -1;
+			pressed = true;
+			if (dY == 0) {
+				if (cycle < 21) {
+					if (cycle % 7 == 0) {
+						MarioCrop.x += tileW;
+					}
+					cycle++;
+				}
+				else {
+					cycle = 0;
+					MarioCrop.x = tileW;
+				}
+			}
+			Mix_PlayChannel(-1, dash, 0);
+		}
+
+		if (state[SDL_SCANCODE_D] && state[SDL_SCANCODE_LSHIFT] && pX + PADDLE_WIDTH < SCREEN_WIDTH) {
+			cooldown = true;
+			startTicks = SDL_GetTicks();
+
+			for (int i = 0; i < platforms.size(); i++) {
+				platforms[i]->setPos({ platforms[i]->getPos().x - int(PADDLE_SPEED * 10),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
+			}
+			rotation = 1;
+			pressed = true;
+			if (dY == 0) {
+				if (cycle < 21) {
+					if (cycle % 7 == 0) {
+						MarioCrop.x += tileW;
+					}
+					cycle++;
+				}
+				else {
+					cycle = 0;
+					MarioCrop.x = tileW;
+				}
+			}
+			Mix_PlayChannel(-1, dash, 0);
+		}
+	}
 }
 
 void Game::update()
 {
+
+	int CurrTicks = SDL_GetTicks();
+
+	if (CurrTicks - startTicks >= 2000) {
+		cooldown = false;
+	
+	}
 	if (Grounded) {
 		MarioCrop.y = tileH;
 	
@@ -213,7 +319,7 @@ void Game::update()
 	}
 	SDL_Rect paddle1 = { pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT };
 		
-	for (int i = 0; i < sizeof(platforms)/sizeof(platforms[0]); i++) {
+	for (int i = 0; i < platforms.size(); i++) {
 		if (Collision::CollideOnTop(paddle1, platforms[i]->getPos())) {
 
 			if (platforms[i]->getPos().y < paddle1.y) {
@@ -225,7 +331,7 @@ void Game::update()
 				if (dY < 0) { dY = 0; }
 				if (pY < platforms[i]->getPos().y+ platforms[i]->getPos().h) {
 
-					pY = platforms[i]->getPos().y + platforms[i]->getPos().h;
+					pY = platforms[i]->getPos().y + platforms[i]->getPos().h+2;
 				}	
 			}
 			else {
@@ -277,7 +383,7 @@ void Game::render()
 	for (int i = 0; i < coins.size(); i++) {
 		SDL_RenderCopy(renderer, blocktex, &coins[i]->crop, &coins[i]->pos);
 	}
-	for (int i = 0; i < sizeof(platforms) / sizeof(platforms[0]); i++) {
+	for (int i = 0; i < platforms.size(); i++) {
 		SDL_Rect tmp = platforms[i]->getPos();
 		SDL_Rect crop = platforms[i]->getCrop();
 
@@ -285,9 +391,12 @@ void Game::render()
 		SDL_RenderCopy(renderer, platforms[i]->getTex(), &crop, &tmp);
 		
 	}
+	SDL_Rect textpos = { 0,0,100,30 };
 	SDL_Rect tmp = fllor.getPos();
 	SDL_Rect crop = fllor.getCrop();
 	SDL_RenderCopy(renderer, fllor.getTex(), &crop, &tmp);
+
+	SDL_RenderCopy(renderer, test,NULL, &textpos);
 
 	SDL_Rect paddle1 = {pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT};
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

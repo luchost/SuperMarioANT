@@ -21,9 +21,6 @@ const int PADDLE_WIDTH = 70;
 const int PADDLE_HEIGHT = 80;
 const double PADDLE_SPEED = 6.8;
 
-const int BALL_SIZE = 10;
-const int BALL_SPEED = 5;
-
 class Game {
 public:
 	Game();
@@ -32,6 +29,8 @@ public:
 	bool init();
 	void quit();
 	
+
+	void StartMenu();
 	void handleEvents();
 	void update();
 	void render();
