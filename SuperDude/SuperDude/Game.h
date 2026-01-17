@@ -31,6 +31,7 @@ public:
 	
 
 	void StartMenu();
+	void SettingsMenu();
 	void handleEvents();
 	void update();
 	void render();

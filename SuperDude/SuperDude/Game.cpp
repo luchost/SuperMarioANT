@@ -43,17 +43,157 @@ bool cooldown = false;
 vector<Coin*> coins;
 TTF_Font* font;
 
+int Jump = SDL_SCANCODE_W;
+int Left = SDL_SCANCODE_A;
+int Right = SDL_SCANCODE_D;
+int Dash = SDL_SCANCODE_LSHIFT;
+
+
+
 Game::Game() {
 
 }
 Game::~Game() {
 
 }
+void Game::SettingsMenu() {
+	SDL_Event event;
+	bool start = false;
+	Button VolumeButton({ 200,100,100,10 }, font, "Volume", renderer);
+	SDL_Rect volumeBar({220,200,128*3,5});
+	SDL_Rect volumePin({ 220,180,40,40 });
+	Button Exit({ 200,800,100,10 }, font, "Quit", renderer);
+	Button JumpBt({ 200,300,100,10 }, font, "Jump", renderer);
+	Button LeftBt({ 400,300,100,10 }, font, "Left", renderer);
+	Button RightBt({ 600,300,100,10 }, font, "Right", renderer);
+	Button DashBt({ 800,300,100,10 }, font, "Dash", renderer);
+	/*SDL_Scancode tmp = Jump;
+	char j = SDL_GetKeyFromScancode(Jump);
+
+	string q;
+	q[0] = j;
+	Button JumpBt2({ 310,300,10,10 }, font, q, renderer);
+	*/
+	int x, y;
+	while (!start) {
+		do {
+			SDL_PollEvent(&event);
+			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_RenderClear(renderer);
+
+			SDL_RenderCopy(renderer, VolumeButton.tex, NULL, &VolumeButton.pos);
+			SDL_RenderCopy(renderer, Exit.tex, NULL, &Exit.pos);
+			SDL_RenderCopy(renderer, JumpBt.tex, NULL, &JumpBt.pos);
+			SDL_RenderCopy(renderer, LeftBt.tex, NULL, &LeftBt.pos);
+			SDL_RenderCopy(renderer, RightBt.tex, NULL, &RightBt.pos);
+			SDL_RenderCopy(renderer, DashBt.tex, NULL, &DashBt.pos);
+			//SDL_RenderCopy(renderer, JumpBt2.tex, NULL, &JumpBt2.pos);
+			//SDL_RenderCopy(renderer, LeftBt.tex, NULL, &LeftBt.pos);
+			//SDL_RenderCopy(renderer, RightBt.tex, NULL, &RightBt.pos);
+			//SDL_RenderCopy(renderer, DashBt.tex, NULL, &DashBt.pos);
+
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderFillRect(renderer, &volumeBar);
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderFillRect(renderer, &volumePin);
+			SDL_RenderPresent(renderer);
+		} while (event.type != SDL_MOUSEBUTTONDOWN);
+		if (event.button.button == SDL_BUTTON_LEFT) {
+			SDL_GetMouseState(&x, &y);
+			SDL_Rect tmp = { x,y,0,0 };
+
+			if (Collision::Collide(tmp, VolumeButton.pos)) {
+				do {
+					SDL_PollEvent(&event);
+				} while (event.type != SDL_MOUSEBUTTONDOWN);
+				if (event.button.button == SDL_BUTTON_LEFT) {
+					SDL_GetMouseState(&x, &y);
+					if (x > 220 + 128 * 3) { x = 220 + 128 * 3; };
+					if (x < 220 ) { x = 220; };
+					volumePin.x = x;
+					Mix_Volume(-1, (x - 220) / 3);
+					Mix_VolumeMusic((x - 220) / 3);
+				}
+			}
+			if (Collision::Collide(tmp, JumpBt.pos)) {
+				bool pres = false;
+				const Uint8* state = SDL_GetKeyboardState(NULL);
+				do {
+					SDL_PumpEvents();
+					
+					for (int i = 0; i < 255; i++) {
+						if (state[i]) {
+							Jump = i;
+							pres = true;
+							break;
+						}
+					}
+				
+				} while (!pres);
+			}
+			if (Collision::Collide(tmp, LeftBt.pos)) {
+				bool pres = false;
+				const Uint8* state = SDL_GetKeyboardState(NULL);
+				do {
+					SDL_PumpEvents();
+
+					for (int i = 0; i < 255; i++) {
+						if (state[i]) {
+							Left = i;
+							pres = true;
+							break;
+						}
+					}
+
+				} while (!pres);
+			}
+			if (Collision::Collide(tmp, RightBt.pos)) {
+				bool pres = false;
+				const Uint8* state = SDL_GetKeyboardState(NULL);
+				do {
+					SDL_PumpEvents();
+
+					for (int i = 0; i < 255; i++) {
+						if (state[i]) {
+							Right = i;
+							pres = true;
+							break;
+						}
+					}
+
+				} while (!pres);
+			}
+			if (Collision::Collide(tmp, DashBt.pos)) {
+				bool pres = false;
+				const Uint8* state = SDL_GetKeyboardState(NULL);
+				do {
+					SDL_PumpEvents();
+
+					for (int i = 0; i < 255; i++) {
+						if (state[i]) {
+							Dash = i;
+							pres = true;
+							break;
+						}
+					}
+
+				} while (!pres);
+			}
+
+
+			if (Collision::Collide(tmp, Exit.pos)) {
+				return;
+			}
+		}
+	}
+
+}
 void Game::StartMenu() {
 	SDL_Event event;
 	bool start = false;
 	int x, y;
-	Button startButton({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,100,10 }, font, "Start", renderer);
+	Button startButton({ SCREEN_WIDTH/2-250 ,SCREEN_HEIGHT/2-100 ,100,10 }, font, "Start", renderer);
+	Button settingsButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 ,100,10 }, font, "Settings", renderer);
 	while (!start) {
 		do {
 			SDL_PollEvent(&event);
@@ -61,6 +201,7 @@ void Game::StartMenu() {
 			SDL_RenderClear(renderer);
 
 			SDL_RenderCopy(renderer, startButton.tex, NULL, &startButton.pos);
+			SDL_RenderCopy(renderer, settingsButton.tex, NULL, &settingsButton.pos);
 			SDL_RenderPresent(renderer);
 		} while (event.type != SDL_MOUSEBUTTONDOWN);
 		
@@ -70,6 +211,10 @@ void Game::StartMenu() {
 			if (Collision::Collide(tmp, startButton.pos)) {
 				startButton.OnClick();
 				start = true;
+			}
+			else if (Collision::Collide(tmp, settingsButton.pos)) {
+				settingsButton.OnClick();
+				SettingsMenu();
 			}
 
 
@@ -165,7 +310,7 @@ bool Game::init()
 
 	test = TextureManager::LoadTextureText(font, "HEllo its a me mario", renderer);
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
-	Mix_VolumeMusic(20);
+	//Mix_VolumeMusic(20);
 
 	return isRunning = true;
 }
@@ -185,7 +330,7 @@ void Game::handleEvents()
 
 	// Move paddles
 	const Uint8* state = SDL_GetKeyboardState(NULL);
-	if (state[SDL_SCANCODE_W] && pY > 0 && Grounded) {
+	if (state[Jump] && pY > 0 && Grounded) {
 		dY -= PADDLE_SPEED*2;
 		cameraY -= PADDLE_SPEED;
 		Mix_PlayChannel(-1, pasta, 0);
@@ -193,7 +338,7 @@ void Game::handleEvents()
 	if (state[SDL_SCANCODE_S] && pY + PADDLE_HEIGHT < SCREEN_HEIGHT) {
 		//dY += PADDLE_SPEED;
 	}
-	if (state[SDL_SCANCODE_A] && pX > 0) {
+	if (state[Left] && pX > 0) {
 		for (int i = 0; i < platforms.size(); i++) {
 			platforms[i]->setPos({ platforms[i]->getPos().x + int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
 		}
@@ -213,7 +358,7 @@ void Game::handleEvents()
 		}
 	}
 	
-	if (state[SDL_SCANCODE_D] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
+	if (state[Right] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
 		for (int i = 0; i < platforms.size(); i++) {
 			platforms[i]->setPos({ platforms[i]->getPos().x - int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
 		}
@@ -234,7 +379,7 @@ void Game::handleEvents()
 	}
 	if (!cooldown) {
 
-		if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_LSHIFT] && pX > 0) {
+		if (state[Left] && state[Dash] && pX > 0) {
 			cooldown = true;
 			startTicks = SDL_GetTicks();
 			for (int i = 0; i < platforms.size(); i++) {
@@ -257,7 +402,7 @@ void Game::handleEvents()
 			Mix_PlayChannel(-1, dash, 0);
 		}
 
-		if (state[SDL_SCANCODE_D] && state[SDL_SCANCODE_LSHIFT] && pX + PADDLE_WIDTH < SCREEN_WIDTH) {
+		if (state[Right] && state[Dash] && pX + PADDLE_WIDTH < SCREEN_WIDTH) {
 			cooldown = true;
 			startTicks = SDL_GetTicks();
 
