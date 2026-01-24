@@ -4,6 +4,7 @@
 #include"Collision.hpp"
 #include "Button.hpp"
 #include<vector>
+#include<fstream>
 
 const int SPRITE_COLS = 5;
 const int SPRITE_ROWS = 5;
@@ -43,10 +44,13 @@ bool cooldown = false;
 vector<Coin*> coins;
 TTF_Font* font;
 
-int Jump = SDL_SCANCODE_W;
-int Left = SDL_SCANCODE_A;
-int Right = SDL_SCANCODE_D;
-int Dash = SDL_SCANCODE_LSHIFT;
+
+
+SDL_Scancode Jump = SDL_SCANCODE_W;
+SDL_Scancode Left = SDL_SCANCODE_A;
+SDL_Scancode Right = SDL_SCANCODE_D;
+SDL_Scancode Dash = SDL_SCANCODE_LSHIFT;
+int Volume = 0;
 
 
 
@@ -56,24 +60,44 @@ Game::Game() {
 Game::~Game() {
 
 }
+void Game::loadSettings() {
+	ifstream ReadFile("Settings.txt");
+	string tmp;
+	ReadFile >> tmp;
+	Jump = SDL_GetScancodeFromName(tmp.c_str());
+	ReadFile >> tmp;
+	Left = SDL_GetScancodeFromName(tmp.c_str());
+	ReadFile >> tmp;
+	Right = SDL_GetScancodeFromName(tmp.c_str());
+	ReadFile >> tmp;
+	Dash = SDL_GetScancodeFromName(tmp.c_str());
+	ReadFile >> Volume;
+	Mix_Volume(-1,Volume);
+	Mix_VolumeMusic(Volume);
+}
+void Game :: writeSettings() {
+	ofstream File("Settings.txt");
+	File << SDL_GetScancodeName(Jump)<<endl<<SDL_GetScancodeName(Left) << endl << SDL_GetScancodeName(Right) << endl;
+	File << SDL_GetScancodeName(Dash) << endl;
+	File << Volume;
+	File.close();
+}
 void Game::SettingsMenu() {
 	SDL_Event event;
 	bool start = false;
 	Button VolumeButton({ 200,100,100,10 }, font, "Volume", renderer);
 	SDL_Rect volumeBar({220,200,128*3,5});
-	SDL_Rect volumePin({ 220,180,40,40 });
+	SDL_Rect volumePin({ Volume*3+220,180,40,40 });
 	Button Exit({ 200,800,100,10 }, font, "Quit", renderer);
 	Button JumpBt({ 200,300,100,10 }, font, "Jump", renderer);
 	Button LeftBt({ 400,300,100,10 }, font, "Left", renderer);
 	Button RightBt({ 600,300,100,10 }, font, "Right", renderer);
 	Button DashBt({ 800,300,100,10 }, font, "Dash", renderer);
-	/*SDL_Scancode tmp = Jump;
-	char j = SDL_GetKeyFromScancode(Jump);
+	Button* JumpBt2 = new Button({ 200,350,100,10 }, font, SDL_GetScancodeName(Jump), renderer);
+	Button* LeftBt2 = new Button({ 400,350,100,10 }, font, SDL_GetScancodeName(Left), renderer);
+	Button* RightBt2 = new Button({ 600,350,100,10 }, font, SDL_GetScancodeName(Right), renderer);
+	Button* DashBt2 = new Button({ 800,350,100,10 }, font, SDL_GetScancodeName(Dash), renderer);
 
-	string q;
-	q[0] = j;
-	Button JumpBt2({ 310,300,10,10 }, font, q, renderer);
-	*/
 	int x, y;
 	while (!start) {
 		do {
@@ -87,10 +111,10 @@ void Game::SettingsMenu() {
 			SDL_RenderCopy(renderer, LeftBt.tex, NULL, &LeftBt.pos);
 			SDL_RenderCopy(renderer, RightBt.tex, NULL, &RightBt.pos);
 			SDL_RenderCopy(renderer, DashBt.tex, NULL, &DashBt.pos);
-			//SDL_RenderCopy(renderer, JumpBt2.tex, NULL, &JumpBt2.pos);
-			//SDL_RenderCopy(renderer, LeftBt.tex, NULL, &LeftBt.pos);
-			//SDL_RenderCopy(renderer, RightBt.tex, NULL, &RightBt.pos);
-			//SDL_RenderCopy(renderer, DashBt.tex, NULL, &DashBt.pos);
+			SDL_RenderCopy(renderer, JumpBt2->tex, NULL, &JumpBt2->pos);
+			SDL_RenderCopy(renderer, LeftBt2->tex, NULL, &LeftBt2->pos);
+			SDL_RenderCopy(renderer, RightBt2->tex, NULL, &RightBt2->pos);
+			SDL_RenderCopy(renderer, DashBt2->tex, NULL, &DashBt2->pos);
 
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderFillRect(renderer, &volumeBar);
@@ -111,77 +135,138 @@ void Game::SettingsMenu() {
 					if (x > 220 + 128 * 3) { x = 220 + 128 * 3; };
 					if (x < 220 ) { x = 220; };
 					volumePin.x = x;
+					Volume = (x - 220) / 3;
 					Mix_Volume(-1, (x - 220) / 3);
 					Mix_VolumeMusic((x - 220) / 3);
 				}
 			}
-			if (Collision::Collide(tmp, JumpBt.pos)) {
+			if (Collision::Collide(tmp, JumpBt.pos)|| Collision::Collide(tmp, JumpBt2->pos)) {
 				bool pres = false;
-				const Uint8* state = SDL_GetKeyboardState(NULL);
 				do {
-					SDL_PumpEvents();
-					
-					for (int i = 0; i < 255; i++) {
-						if (state[i]) {
-							Jump = i;
-							pres = true;
-							break;
+					SDL_PollEvent(&event);
+					if (event.type == SDL_KEYDOWN) {
+						SDL_Scancode letter = event.key.keysym.scancode;
+						if (letter == Jump || letter == Left || letter == Right || letter == Dash) {
+							SDL_Window* Popup= SDL_CreateWindow("Warning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 100, SDL_WINDOW_SHOWN);;
+							SDL_Renderer* rendererPop = SDL_CreateRenderer(Popup, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+							
+							Button Error({ 50,50,200,10 }, font, "This Button is already in use", rendererPop);
+								SDL_SetRenderDrawColor(rendererPop, 255, 255, 255, 255);
+								SDL_RenderClear(rendererPop);
+								SDL_RenderCopy(rendererPop, Error.tex, NULL, &Error.pos);
+								SDL_RenderPresent(rendererPop);
+
+
+								SDL_Delay(1000);
+							SDL_DestroyRenderer(rendererPop);
+							SDL_DestroyWindow(Popup);
 						}
+						Jump = event.key.keysym.scancode;
+						pres = true;
+						string q = SDL_GetScancodeName(letter);
+						JumpBt2 = new Button({ 200,350,100,10 }, font, q, renderer);
 					}
-				
+
+
+				}while (!pres);
+			}
+			if (Collision::Collide(tmp, LeftBt.pos)|| Collision::Collide(tmp, LeftBt2->pos)) {
+				bool pres = false;
+				do {
+					SDL_PollEvent(&event);
+					if (event.type == SDL_KEYDOWN) {
+						SDL_Scancode letter = event.key.keysym.scancode;
+						if (letter == Jump || letter == Left || letter == Right || letter == Dash) {
+							SDL_Window* Popup = SDL_CreateWindow("Warning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 100, SDL_WINDOW_SHOWN);;
+							SDL_Renderer* rendererPop = SDL_CreateRenderer(Popup, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+							Button Error({ 50,50,200,10 }, font, "This Button is already in use", rendererPop);
+							SDL_SetRenderDrawColor(rendererPop, 255, 255, 255, 255);
+							SDL_RenderClear(rendererPop);
+							SDL_RenderCopy(rendererPop, Error.tex, NULL, &Error.pos);
+							SDL_RenderPresent(rendererPop);
+
+
+							SDL_Delay(1000);
+							SDL_DestroyRenderer(rendererPop);
+							SDL_DestroyWindow(Popup);
+						}
+
+						Left = event.key.keysym.scancode;
+						pres = true;
+						string q = SDL_GetScancodeName(letter);
+						LeftBt2 = new Button({ 400,350,100,10 }, font, q, renderer);
+					}
+
+
 				} while (!pres);
 			}
-			if (Collision::Collide(tmp, LeftBt.pos)) {
+			if (Collision::Collide(tmp, RightBt.pos)|| Collision::Collide(tmp, RightBt2->pos)) {
 				bool pres = false;
-				const Uint8* state = SDL_GetKeyboardState(NULL);
 				do {
-					SDL_PumpEvents();
+					SDL_PollEvent(&event);
+					if (event.type == SDL_KEYDOWN) {
+						SDL_Scancode letter = event.key.keysym.scancode;
+						if (letter == Jump || letter == Left || letter == Right || letter == Dash) {
+							SDL_Window* Popup = SDL_CreateWindow("Warning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 100, SDL_WINDOW_SHOWN);;
+							SDL_Renderer* rendererPop = SDL_CreateRenderer(Popup, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-					for (int i = 0; i < 255; i++) {
-						if (state[i]) {
-							Left = i;
-							pres = true;
-							break;
+							Button Error({ 50,50,200,10 }, font, "This Button is already in use", rendererPop);
+							SDL_SetRenderDrawColor(rendererPop, 255, 255, 255, 255);
+							SDL_RenderClear(rendererPop);
+							SDL_RenderCopy(rendererPop, Error.tex, NULL, &Error.pos);
+							SDL_RenderPresent(rendererPop);
+
+
+							SDL_Delay(1000);
+							SDL_DestroyRenderer(rendererPop);
+							SDL_DestroyWindow(Popup);
 						}
+
+						Right = event.key.keysym.scancode;
+						pres = true;
+						string q = SDL_GetScancodeName(letter);
+						RightBt2 = new Button({ 600,350,100,10 }, font, q, renderer);
 					}
+
 
 				} while (!pres);
 			}
-			if (Collision::Collide(tmp, RightBt.pos)) {
+			if (Collision::Collide(tmp, DashBt.pos)|| Collision::Collide(tmp, DashBt2->pos)) {
 				bool pres = false;
-				const Uint8* state = SDL_GetKeyboardState(NULL);
 				do {
-					SDL_PumpEvents();
+					SDL_PollEvent(&event);
+					if (event.type == SDL_KEYDOWN) {
+						SDL_Scancode letter = event.key.keysym.scancode;
+						if (letter == Jump || letter == Left || letter == Right || letter == Dash) {
+							SDL_Window* Popup = SDL_CreateWindow("Warning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 100, SDL_WINDOW_SHOWN);;
+							SDL_Renderer* rendererPop = SDL_CreateRenderer(Popup, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-					for (int i = 0; i < 255; i++) {
-						if (state[i]) {
-							Right = i;
-							pres = true;
-							break;
+							Button Error({ 50,50,200,10 }, font, "This Button is already in use", rendererPop);
+							SDL_SetRenderDrawColor(rendererPop, 255, 255, 255, 255);
+							SDL_RenderClear(rendererPop);
+							SDL_RenderCopy(rendererPop, Error.tex, NULL, &Error.pos);
+							SDL_RenderPresent(rendererPop);
+
+
+							SDL_Delay(1000);
+							SDL_DestroyRenderer(rendererPop);
+							SDL_DestroyWindow(Popup);
 						}
+
+						Dash = letter;
+						pres = true;
+						string q = SDL_GetScancodeName(letter);
+						DashBt2 = new Button({ 800,350,100,10 }, font, q, renderer);
 					}
 
-				} while (!pres);
-			}
-			if (Collision::Collide(tmp, DashBt.pos)) {
-				bool pres = false;
-				const Uint8* state = SDL_GetKeyboardState(NULL);
-				do {
-					SDL_PumpEvents();
-
-					for (int i = 0; i < 255; i++) {
-						if (state[i]) {
-							Dash = i;
-							pres = true;
-							break;
-						}
-					}
 
 				} while (!pres);
 			}
 
 
 			if (Collision::Collide(tmp, Exit.pos)) {
+				writeSettings();
 				return;
 			}
 		}
@@ -194,6 +279,7 @@ void Game::StartMenu() {
 	int x, y;
 	Button startButton({ SCREEN_WIDTH/2-250 ,SCREEN_HEIGHT/2-100 ,100,10 }, font, "Start", renderer);
 	Button settingsButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 ,100,10 }, font, "Settings", renderer);
+	Button quitButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 +100 ,100,10 }, font, "Quit", renderer);
 	while (!start) {
 		do {
 			SDL_PollEvent(&event);
@@ -202,6 +288,7 @@ void Game::StartMenu() {
 
 			SDL_RenderCopy(renderer, startButton.tex, NULL, &startButton.pos);
 			SDL_RenderCopy(renderer, settingsButton.tex, NULL, &settingsButton.pos);
+			SDL_RenderCopy(renderer, quitButton.tex, NULL, &quitButton.pos);
 			SDL_RenderPresent(renderer);
 		} while (event.type != SDL_MOUSEBUTTONDOWN);
 		
@@ -215,6 +302,10 @@ void Game::StartMenu() {
 			else if (Collision::Collide(tmp, settingsButton.pos)) {
 				settingsButton.OnClick();
 				SettingsMenu();
+			}
+			else if(Collision::Collide(tmp, quitButton.pos)){
+				isRunning = false;
+				return;
 			}
 
 
@@ -330,6 +421,10 @@ void Game::handleEvents()
 
 	// Move paddles
 	const Uint8* state = SDL_GetKeyboardState(NULL);
+
+	if (state[SDL_SCANCODE_ESCAPE]) {
+		SettingsMenu();
+	}
 	if (state[Jump] && pY > 0 && Grounded) {
 		dY -= PADDLE_SPEED*2;
 		cameraY -= PADDLE_SPEED;

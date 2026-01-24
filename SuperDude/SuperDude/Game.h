@@ -32,6 +32,8 @@ public:
 
 	void StartMenu();
 	void SettingsMenu();
+	void loadSettings();
+	void writeSettings();
 	void handleEvents();
 	void update();
 	void render();

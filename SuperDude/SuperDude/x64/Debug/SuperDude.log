@@ -1,10 +1,10 @@
 ﻿  Game.cpp
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(463,23): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(463,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(463,27): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(463,27): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(544,22): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(544,22): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(544,26): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
-C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(544,26): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(560,23): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(560,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(560,27): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(560,27): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(641,22): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(641,22): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(641,26): warning C4838: conversion from 'double' to 'int' requires a narrowing conversion
+C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\SuperDude\Game.cpp(641,26): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   SuperDude.vcxproj -> C:\Users\HP\source\repos\SuperDude\SuperMarioANT\SuperDude\x64\Debug\SuperDude.exe
