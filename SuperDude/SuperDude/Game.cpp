@@ -3,6 +3,7 @@
 #include "Platform.hpp"
 #include"Collision.hpp"
 #include "Button.hpp"
+#include"Enemy.h"
 #include<vector>
 #include<fstream>
 
@@ -33,6 +34,7 @@ double cameraY = 0;
 bool Grounded = false;
 vector<Platform*> platforms;
 SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
+SDL_Rect MarioPos = { pX,pY,PADDLE_WIDTH,PADDLE_HEIGHT };
 int rotation = 1;
 int cycle = 0;
 bool pressed = false;
@@ -44,7 +46,7 @@ bool cooldown = false;
 vector<Coin*> coins;
 TTF_Font* font;
 
-
+vector<Enemy*> enemies;
 
 SDL_Scancode Jump = SDL_SCANCODE_W;
 SDL_Scancode Left = SDL_SCANCODE_A;
@@ -401,6 +403,12 @@ bool Game::init()
 
 	test = TextureManager::LoadTextureText(font, "HEllo its a me mario", renderer);
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
+	Enemy* em1=new Enemy({ 130,230,40,20 }, { 1,0,193,161 }, TextureManager::LoadTexture("assets/Goomba.png", renderer), 2);
+	Enemy* em2 = new Ghost({ 130,230,80,60 }, {0,0,820,636}, TextureManager::LoadTexture("assets/Boo.png", renderer), 2, &MarioPos);
+	;
+	enemies.push_back(em1);
+	enemies.push_back(em2);
+
 	//Mix_VolumeMusic(20);
 
 	return isRunning = true;
@@ -437,6 +445,9 @@ void Game::handleEvents()
 		for (int i = 0; i < platforms.size(); i++) {
 			platforms[i]->setPos({ platforms[i]->getPos().x + int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
 		}
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies[i]->pos.x += int(PADDLE_SPEED);
+		}
 		rotation = -1;
 		pressed = true;
 		if (dY == 0) {
@@ -456,6 +467,9 @@ void Game::handleEvents()
 	if (state[Right] && pX +PADDLE_WIDTH < SCREEN_WIDTH) {
 		for (int i = 0; i < platforms.size(); i++) {
 			platforms[i]->setPos({ platforms[i]->getPos().x - int(PADDLE_SPEED),platforms[i]->getPos().y,platforms[i]->getPos().w ,platforms[i]->getPos().h });
+		}
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies[i]->pos.x -= int(PADDLE_SPEED);
 		}
 		rotation = 1;
 		pressed = true;
@@ -534,7 +548,6 @@ void Game::update()
 	}
 	if (Grounded) {
 		MarioCrop.y = tileH;
-	
 	}
 	
 	if (Mix_PlayingMusic() == 0)
@@ -552,58 +565,71 @@ void Game::update()
 	//cameraY += dY ;
 
 	Grounded = false;
-	pY += dY;
+	MarioPos.y += dY;
 	dY += 0.25;
 	if (dY < 0) {
 		MarioCrop = { tileW,tileH * 2,tileW,tileH -40 };
-	}
-	SDL_Rect paddle1 = { pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT };
-		
+	}	
 	for (int i = 0; i < platforms.size(); i++) {
-		if (Collision::CollideOnTop(paddle1, platforms[i]->getPos())) {
+		if (Collision::CollideOnTop(MarioPos, platforms[i]->getPos())) {
 
-			if (platforms[i]->getPos().y < paddle1.y) {
+			if (platforms[i]->getPos().y < MarioPos.y) {
 				platforms[i]->OnCollision();
 				if (platforms[i]->getCrop().y > 800) {
 					delete platforms[i];
 					platforms[i] = new Platform;
 				}
 				if (dY < 0) { dY = 0; }
-				if (pY < platforms[i]->getPos().y+ platforms[i]->getPos().h) {
+				if (MarioPos.y < platforms[i]->getPos().y+ platforms[i]->getPos().h) {
 
-					pY = platforms[i]->getPos().y + platforms[i]->getPos().h+2;
+					MarioPos.y = platforms[i]->getPos().y + platforms[i]->getPos().h+2;
 				}	
 			}
 			else {
 				Grounded = true;
 				if (dY > 0) { dY = 0; }
-				if (pY > platforms[i]->getPos().y - PADDLE_HEIGHT) {
+				if (MarioPos.y > platforms[i]->getPos().y - PADDLE_HEIGHT) {
 
-					pY = platforms[i]->getPos().y - PADDLE_HEIGHT;
+					MarioPos.y = platforms[i]->getPos().y - PADDLE_HEIGHT;
 				}
 			}
 
 		}
-		else if (Collision::Collide(paddle1, platforms[i]->getPos())) {
-			if (pX - platforms[i]->getPos().x >= 0)
+		else if (Collision::Collide(MarioPos, platforms[i]->getPos())) {
+			if (MarioPos.x - platforms[i]->getPos().x >= 0)
 			{
-				pX = platforms[i]->getPos().x + platforms[i]->getPos().w;
+				MarioPos.x = platforms[i]->getPos().x + platforms[i]->getPos().w;
 			}
 			else {
-				pX = platforms[i]->getPos().x - PADDLE_WIDTH;
+				MarioPos.x = platforms[i]->getPos().x - PADDLE_WIDTH;
 			
 			}
 		}
 		
 		
 	}
-	if (Collision::Collide(paddle1, fllor.getPos())) {
+	if (Collision::Collide(MarioPos, fllor.getPos())) {
 		Grounded = true;
 		if (dY > 0) { dY = 0; }
-		if (pY > fllor.getPos().y - PADDLE_HEIGHT) {
+		if (MarioPos.y > fllor.getPos().y - PADDLE_HEIGHT) {
 
-			pY = fllor.getPos().y - PADDLE_HEIGHT;
+			MarioPos.y = fllor.getPos().y - PADDLE_HEIGHT;
 		}
+	}
+	for (int i = 0; i < enemies.size(); i++) {
+		if (!enemies[i]->checkGround(platforms)) {
+			enemies[i]->rotation *= -1;
+		}
+		enemies[i]->Move();
+		if (Collision::Collide(MarioPos, enemies[i]->pos)) {
+			if (MarioPos.y+MarioPos.h < enemies[i]->pos.y+10) {
+				enemies[i]->onHurt();
+				enemies.erase(enemies.begin() + i);
+			}
+			
+		}
+		
+	
 	}
 	for (int i = 0; i < coins.size(); i++) {
 		Mix_PlayChannel(-1, coin, 0);
@@ -631,6 +657,10 @@ void Game::render()
 		SDL_RenderCopy(renderer, platforms[i]->getTex(), &crop, &tmp);
 		
 	}
+	for (int i = 0; i < enemies.size(); i++) {
+	
+		SDL_RenderCopy(renderer, enemies[i]->tex, &enemies[i]->crop, &enemies[i]->pos);
+	}
 	SDL_Rect textpos = { 0,0,100,30 };
 	SDL_Rect tmp = fllor.getPos();
 	SDL_Rect crop = fllor.getCrop();
@@ -638,7 +668,7 @@ void Game::render()
 
 	SDL_RenderCopy(renderer, test,NULL, &textpos);
 
-	SDL_Rect paddle1 = {pX, pY, PADDLE_WIDTH, PADDLE_HEIGHT};
+	SDL_Rect paddle1 = {MarioPos.x,MarioPos.y , PADDLE_WIDTH, PADDLE_HEIGHT};
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	if (rotation == -1) {
 		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &paddle1, 0, NULL, SDL_FLIP_HORIZONTAL);
