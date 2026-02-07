@@ -12,16 +12,31 @@ public:
 	int moveSpeed;
 	int rotation=1;
 	int anim = 0;
+	int nop=0;
 
 
 	bool checkGround(vector<Platform*> platforms) {
 		SDL_Rect infront = { pos.x + pos.w * rotation,pos.y,pos.w,pos.h + 10 };
 		for (int i = 0; i < platforms.size(); i++) {
 			if (Collision::Collide(infront, platforms[i]->getPos())) {
+				nop = 0;
 				return true;
 			}
 		}
+		nop++;
 		return false;
+	
+	}
+
+	bool FloatToDeath() {
+		if (nop >= 5) {
+			return true;
+
+		}
+		else {
+			return false;
+		}
+	
 	
 	}
 	virtual void Move() {
@@ -66,29 +81,44 @@ public:
 class Ghost :public Enemy {
 public:
 	SDL_Rect* playerPos = nullptr;
+	int* playerRotation = nullptr;
 	Ghost():Enemy() {
 	
 	}
-	Ghost(SDL_Rect pos, SDL_Rect crop, SDL_Texture* tex, int moveSpeed,SDL_Rect* PlayerPos) :Enemy(pos, crop, tex, moveSpeed) {
+	Ghost(SDL_Rect pos, SDL_Rect crop, SDL_Texture* tex, int moveSpeed,SDL_Rect* PlayerPos,int* playerRotation) :Enemy(pos, crop, tex, moveSpeed) {
 		this->playerPos = PlayerPos;
+		this->playerRotation = playerRotation;
 	}
 	bool LookingAtMe() {
-	
+		if (playerPos->x > pos.x) {
+			if (*playerRotation == -1) {
+				return true;
+			}
+		}
+		else if(playerPos->x < pos.x){
+			if (*playerRotation == 1) {
+				return true;
+			}
+		}
+		return false;
 	
 	}
 	void Move() {
-		if (playerPos->x > pos.x) {
-			pos.x += moveSpeed;
-		}
-		else if (playerPos->x < pos.x) {
-			pos.x -= moveSpeed;
-		}
+		nop = 0;
+		if (!LookingAtMe()) {
+			if (playerPos->x > pos.x) {
+				pos.x += moveSpeed;
+			}
+			else if (playerPos->x < pos.x) {
+				pos.x -= moveSpeed;
+			}
 
-		if (playerPos->y > pos.y) {
-			pos.y += moveSpeed;
-		}
-		else if (playerPos->y < pos.y) {
-			pos.y -= moveSpeed;
+			if (playerPos->y > pos.y) {
+				pos.y += moveSpeed;
+			}
+			else if (playerPos->y < pos.y) {
+				pos.y -= moveSpeed;
+			}
 		}
 	}
 	void OnHurt() {

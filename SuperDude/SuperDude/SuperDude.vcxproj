@@ -140,6 +140,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Platform.hpp" />
+    <ClInclude Include="PowerUps.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Test.hpp" />
     <ClInclude Include="TextureManager.h" />

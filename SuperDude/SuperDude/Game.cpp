@@ -23,6 +23,7 @@ SDL_Texture* test;
 SDL_Texture* playertex;
 SDL_Texture* blocktex;
 SDL_Texture* mariotex;
+SDL_Texture* tex;
 
 
 double pY = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
@@ -36,6 +37,7 @@ vector<Platform*> platforms;
 SDL_Rect MarioCrop = { tileW,tileH,tileW,tileH - 40 };
 SDL_Rect MarioPos = { pX,pY,PADDLE_WIDTH,PADDLE_HEIGHT };
 int rotation = 1;
+int MarioHp = 1;
 int cycle = 0;
 bool pressed = false;
 double dY = 0;
@@ -43,7 +45,7 @@ Platform fllor;
 int score = 0;
 int startTicks = SDL_GetTicks();
 bool cooldown = false;
-vector<Coin*> coins;
+vector<PowerUp*> Items;
 TTF_Font* font;
 
 vector<Enemy*> enemies;
@@ -53,7 +55,7 @@ SDL_Scancode Left = SDL_SCANCODE_A;
 SDL_Scancode Right = SDL_SCANCODE_D;
 SDL_Scancode Dash = SDL_SCANCODE_LSHIFT;
 int Volume = 0;
-
+int InvincabilityFrames=0;
 
 
 Game::Game() {
@@ -350,6 +352,7 @@ bool Game::init()
 
 	blocktex = TextureManager::LoadTexture("assets/blocks.png", renderer);
 	SDL_Rect tmp = { 0,SCREEN_HEIGHT-220,SCREEN_WIDTH,40 };
+
 	fllor.setPos(tmp);
 	SDL_Rect tm = { 171 + 360,0,160,160 };
 	fllor.setCrop(tm);
@@ -381,7 +384,7 @@ bool Game::init()
 	platforms[5]->setTex(blocktex);
 	platforms[3]->setTex(blocktex);
 
-	platforms.push_back(new QuestionBox(coins));
+	platforms.push_back(new QuestionBox(Items,&MarioHp,&MarioPos));
 	platforms[6]->setTex(blocktex);
 	platforms[6]->setCrop({ 171 + 760,0,160,160 });
 	platforms[6]->setPos({ 1000,SCREEN_HEIGHT-390,80,80 });
@@ -403,8 +406,9 @@ bool Game::init()
 
 	test = TextureManager::LoadTextureText(font, "HEllo its a me mario", renderer);
 	mariotex = TextureManager::LoadTexture("assets/Mario.png", renderer);
+	tex = TextureManager::LoadTexture("assets/guba.png", renderer);
 	Enemy* em1=new Enemy({ 130,230,40,20 }, { 1,0,193,161 }, TextureManager::LoadTexture("assets/Goomba.png", renderer), 2);
-	Enemy* em2 = new Ghost({ 130,230,80,60 }, {0,0,820,636}, TextureManager::LoadTexture("assets/Boo.png", renderer), 2, &MarioPos);
+	Enemy* em2 = new Ghost({ 130,230,80,60 }, {0,0,820,636}, TextureManager::LoadTexture("assets/Boo.png", renderer), 2, &MarioPos,&rotation);
 	;
 	enemies.push_back(em1);
 	enemies.push_back(em2);
@@ -448,6 +452,9 @@ void Game::handleEvents()
 		for (int i = 0; i < enemies.size(); i++) {
 			enemies[i]->pos.x += int(PADDLE_SPEED);
 		}
+		for (int i = 0; i < Items.size(); i++) {
+			Items[i]->pos.x += int(PADDLE_SPEED);
+		}
 		rotation = -1;
 		pressed = true;
 		if (dY == 0) {
@@ -470,6 +477,9 @@ void Game::handleEvents()
 		}
 		for (int i = 0; i < enemies.size(); i++) {
 			enemies[i]->pos.x -= int(PADDLE_SPEED);
+		}
+		for (int i = 0; i < Items.size(); i++) {
+			Items[i]->pos.x -= int(PADDLE_SPEED);
 		}
 		rotation = 1;
 		pressed = true;
@@ -575,9 +585,8 @@ void Game::update()
 
 			if (platforms[i]->getPos().y < MarioPos.y) {
 				platforms[i]->OnCollision();
-				if (platforms[i]->getCrop().y > 800) {
-					delete platforms[i];
-					platforms[i] = new Platform;
+				if (MarioHp>=2) {
+					platforms.erase(platforms.begin() + i);
 				}
 				if (dY < 0) { dY = 0; }
 				if (MarioPos.y < platforms[i]->getPos().y+ platforms[i]->getPos().h) {
@@ -620,23 +629,39 @@ void Game::update()
 		if (!enemies[i]->checkGround(platforms)) {
 			enemies[i]->rotation *= -1;
 		}
+		if (enemies[i]->FloatToDeath()) {
+			enemies[i]->onHurt();
+			enemies.erase(enemies.begin() + i);
+			continue;
+		}
 		enemies[i]->Move();
 		if (Collision::Collide(MarioPos, enemies[i]->pos)) {
 			if (MarioPos.y+MarioPos.h < enemies[i]->pos.y+10) {
 				enemies[i]->onHurt();
 				enemies.erase(enemies.begin() + i);
 			}
+			else if(InvincabilityFrames==0){
+				if (MarioHp == 2) { MarioPos.h /= 2; }
+				MarioHp--;
+				InvincabilityFrames = 30;
+			}
 			
 		}
 		
 	
 	}
-	for (int i = 0; i < coins.size(); i++) {
-		Mix_PlayChannel(-1, coin, 0);
-		if (!coins[i]->Move()) {
-			score += 100;
-			coins.erase(coins.begin() + i);
+	for (int i = 0; i < Items.size(); i++) {
+
+		if (Collision::Collide(MarioPos, Items[i]->pos)) {
+			Items[i]->Effect();
+			Items.erase(Items.begin() + i);
 		}
+	}
+	if (MarioHp <= 0) {
+		quit();
+	}
+	if (InvincabilityFrames > 0) {
+		InvincabilityFrames--;
 	}
 }
 
@@ -646,8 +671,8 @@ void Game::render()
 	SDL_RenderClear(renderer);
 
 	SDL_RenderCopy(renderer, playertex, NULL, NULL);
-	for (int i = 0; i < coins.size(); i++) {
-		SDL_RenderCopy(renderer, blocktex, &coins[i]->crop, &coins[i]->pos);
+	for (int i = 0; i < Items.size(); i++) {
+		SDL_RenderCopy(renderer, tex, NULL, &Items[i]->pos);
 	}
 	for (int i = 0; i < platforms.size(); i++) {
 		SDL_Rect tmp = platforms[i]->getPos();
@@ -668,13 +693,13 @@ void Game::render()
 
 	SDL_RenderCopy(renderer, test,NULL, &textpos);
 
-	SDL_Rect paddle1 = {MarioPos.x,MarioPos.y , PADDLE_WIDTH, PADDLE_HEIGHT};
+	//SDL_Rect paddle1 = {MarioPos.x,MarioPos.y , PADDLE_WIDTH, PADDLE_HEIGHT};
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	if (rotation == -1) {
-		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &paddle1, 0, NULL, SDL_FLIP_HORIZONTAL);
+		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &MarioPos, 0, NULL, SDL_FLIP_HORIZONTAL);
 	}
 	else {
-		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &paddle1, 0, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &MarioPos, 0, NULL, SDL_FLIP_NONE);
 	}
 
 

@@ -1,32 +1,7 @@
 #pragma once
 #include "Collision.hpp"
-#include "Game.h"
+#include "PowerUps.h"
 using namespace std;
-
-class Coin {
-public:
-	SDL_Rect crop = {1673,531,163,163};
-	SDL_Rect pos;
-	//int* score;
-	int destroyme = pos.y + 90;
-	Coin( SDL_Rect pos) {
-		//this->score = &score;
-		this->pos = pos;
-		destroyme = pos.y + 90;
-	}
-	bool Move() {
-		if (pos.y < destroyme) {
-			pos.y += 5;
-			return true;
-		}
-		else {
-			return false;
-		}
-		
-	}
-
-};
-
 
 class Platform {
 protected:
@@ -67,15 +42,18 @@ public:
 };
 
 class QuestionBox :public Platform {
-	vector<Coin*>* coin;
+	vector<PowerUp*>* item;
+	int* MarioHp;
+	SDL_Rect* Mariopos;
 public:
-	QuestionBox(vector<Coin*> &coin) :Platform() {
-		this->coin = &coin;
-	
+	QuestionBox(vector<PowerUp*> &item, int* MarioHp, SDL_Rect* Mariopos) :Platform() {
+		this->item= &item;
+		this->Mariopos = Mariopos;
+		this->MarioHp = MarioHp;
 	}
 
 	void OnCollision() override {
-		coin->push_back(new Coin({ pos.x,pos.y - 90,163/4,163/4 }));
+		item->push_back(new Mushroom(MarioHp,Mariopos,{ pos.x,pos.y - 90,163/4,163/4 }));
 			std::cout << "Question block";
 	}
 
