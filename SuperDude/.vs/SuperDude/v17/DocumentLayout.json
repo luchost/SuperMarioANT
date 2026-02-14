@@ -58,8 +58,7 @@
               "RelativeToolTip": "SuperDude\\Enemy.h",
               "ViewState": "AgIAADYAAAAAAAAAAAAAAGoAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-01-31T12:11:00.714Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-31T12:11:00.714Z"
             },
             {
               "$type": "Document",
@@ -71,8 +70,7 @@
               "RelativeToolTip": "SuperDude\\main.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2026-01-10T12:59:53.767Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-10T12:59:53.767Z"
             },
             {
               "$type": "Document",
@@ -84,8 +82,7 @@
               "RelativeToolTip": "SuperDude\\Game.h",
               "ViewState": "AgIAABUAAAAAAAAAAAAAACAAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-15T12:22:07.722Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T12:22:07.722Z"
             },
             {
               "$type": "Document",
@@ -97,8 +94,7 @@
               "RelativeToolTip": "SuperDude\\Platform.hpp",
               "ViewState": "AgIAACQAAAAAAAAAAAAAADAAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-15T12:10:46.682Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T12:10:46.682Z"
             },
             {
               "$type": "Document",
@@ -108,7 +104,7 @@
               "RelativeDocumentMoniker": "SuperDude\\Game.cpp",
               "ToolTip": "C:\\Users\\HP\\source\\repos\\SuperDude\\SuperMarioANT\\SuperDude\\SuperDude\\Game.cpp",
               "RelativeToolTip": "SuperDude\\Game.cpp",
-              "ViewState": "AgIAAEMBAAAAAAAAAAAcwH8BAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAIUBAAAAAAAAAAAcwJQBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-08T14:41:44.29Z",
               "EditorCaption": ""

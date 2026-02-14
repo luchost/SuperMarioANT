@@ -388,10 +388,35 @@ void Game::LevelEditor() {
 				}
 
 			}
+			else if (event.button.button == SDL_BUTTON_RIGHT) {
+				int x, y;
+				SDL_GetMouseState(&x, &y);
+				SDL_Rect tmp = { x,y,0,0 };
+				for (int i = 0; i < platforms.size(); i++) {
+					if (Collision::Collide(tmp, platforms[i]->getPos())) {
+						platforms.erase(platforms.begin() + i);
+					}
+				}
+				for (int i = 0; i < enemies.size(); i++) {
+					if (Collision::Collide(tmp, enemies[i]->pos)) {
+						enemies.erase(enemies.begin() + i);
+					}
+				}
+
+
+			}
 		}
 
-
 	}
+	ofstream WFile("assets/Level.txt");
+	for (int i = 0; i < platforms.size(); i++) {
+		WFile << "p" << platforms[i]->getPos().x << platforms[i]->getPos().y << endl;
+	}
+	for (int i = 0; i < enemies.size(); i++) {
+		WFile << "e" << enemies[i]->pos.x << enemies[i]->pos.y << endl;
+	}
+
+	WFile.close();
 }
 void Game::StartMenu() {
 	SDL_Event event;
