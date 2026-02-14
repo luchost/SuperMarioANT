@@ -30,6 +30,7 @@ public:
 	void quit();
 	
 
+	void LevelEditor();
 	void StartMenu();
 	void SettingsMenu();
 	void loadSettings();

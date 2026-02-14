@@ -277,13 +277,130 @@ void Game::SettingsMenu() {
 	}
 
 }
+void Game::LevelEditor() {
+	SDL_Event event;
+	bool end = false;
+	int id = 0;
+	int xoffset = 0;
+	platforms.clear();
+	enemies.clear();
+
+	while (!end) {
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
+		SDL_RenderCopy(renderer, playertex, NULL, NULL);
+		for (int i = 0; i < Items.size(); i++) {
+			SDL_RenderCopy(renderer, tex, NULL, &Items[i]->pos);
+		}
+		for (int i = 0; i < platforms.size(); i++) {
+			SDL_Rect tmp = platforms[i]->getPos();
+			SDL_Rect crop = platforms[i]->getCrop();
+			tmp.x -= xoffset;
+
+			SDL_RenderCopy(renderer, platforms[i]->getTex(), &crop, &tmp);
+
+		}
+		for (int i = 0; i < enemies.size(); i++) {
+			SDL_Rect tmp = enemies[i]->pos;
+			tmp.x -= xoffset;
+			SDL_RenderCopy(renderer, enemies[i]->tex, &enemies[i]->crop, &tmp);
+		}
+		SDL_Rect textpos = { 0,0,100,30 };
+		SDL_Rect tmp = fllor.getPos();
+		SDL_Rect crop = fllor.getCrop();
+		SDL_RenderCopy(renderer, fllor.getTex(), &crop, &tmp);
+
+		SDL_RenderCopy(renderer, test, NULL, &textpos);
+
+		//SDL_Rect paddle1 = {MarioPos.x,MarioPos.y , PADDLE_WIDTH, PADDLE_HEIGHT};
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		if (rotation == -1) {
+			SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &MarioPos, 0, NULL, SDL_FLIP_HORIZONTAL);
+		}
+		else {
+			SDL_RenderCopyEx(renderer, mariotex, &MarioCrop, &MarioPos, 0, NULL, SDL_FLIP_NONE);
+		}
+
+
+		SDL_RenderPresent(renderer);
+
+		const Uint8* state = SDL_GetKeyboardState(NULL);
+		if (state[SDL_SCANCODE_RETURN]) {
+			end = true;
+		}
+		if (state[SDL_SCANCODE_A]) {
+			xoffset -= 10;
+		}
+		if (state[SDL_SCANCODE_D]) {
+			xoffset += 10;
+		}
+		if (state[SDL_SCANCODE_1]) {
+				id = 1;
+		}
+		if (state[SDL_SCANCODE_2]) {
+			id = 2;
+		}
+		if (state[SDL_SCANCODE_0]) {
+			id = 0;
+		}
+		if (state[SDL_SCANCODE_3]) {
+			id = 3;
+		}
+		
+			SDL_PollEvent(&event);
+		
+		if(event.type == SDL_MOUSEBUTTONDOWN){
+			if (event.button.button == SDL_BUTTON_LEFT) {
+				int x, y;
+				SDL_GetMouseState(&x, &y);
+				switch (id) {
+
+				case 0: {
+					Platform* platform = new Platform();
+					platform->setPos({ x-25 + xoffset,y-25,50,50 });
+					platform->setTex(blocktex);
+					platform->setCrop({ 171 + 360,0,160,160 });
+					platforms.push_back(platform);
+				}
+					  break;
+				case 1:
+				{
+					QuestionBox* platform = new QuestionBox(Items, &MarioHp, &MarioPos);
+					platform->setPos({ x - 25 + xoffset,y - 25,50,50 });
+					platform->setTex(blocktex);
+					platform->setCrop({ 171 + 760,0,160,160 });
+					platforms.push_back(platform);
+				}
+				break;
+				case 2:
+				{
+					Enemy* enemy = new Enemy({ x + xoffset - 25,y - 25,50,50 }, { 1,0,193,161 }, TextureManager::LoadTexture("assets/Goomba.png", renderer), 2);
+					enemies.push_back(enemy);
+				}
+				break;
+				case 3:
+				{
+					Ghost* enemy = new Ghost({ x + xoffset - 25,y - 25,50,50 }, { 0,0,820,636, }, TextureManager::LoadTexture("assets/Boo.png", renderer), 2, &MarioPos, &rotation);
+					enemies.push_back(enemy);
+				}
+				break;
+				}
+
+			}
+		}
+
+
+	}
+}
 void Game::StartMenu() {
 	SDL_Event event;
 	bool start = false;
 	int x, y;
 	Button startButton({ SCREEN_WIDTH/2-250 ,SCREEN_HEIGHT/2-100 ,100,10 }, font, "Start", renderer);
 	Button settingsButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 ,100,10 }, font, "Settings", renderer);
-	Button quitButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 +100 ,100,10 }, font, "Quit", renderer);
+	Button quitButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2 + 200 ,100,10 }, font, "Quit", renderer);
+	Button LevelButton({ SCREEN_WIDTH / 2 - 250 ,SCREEN_HEIGHT / 2+ 100 ,100,10 }, font, "Editor", renderer);
 	while (!start) {
 		do {
 			SDL_PollEvent(&event);
@@ -293,6 +410,7 @@ void Game::StartMenu() {
 			SDL_RenderCopy(renderer, startButton.tex, NULL, &startButton.pos);
 			SDL_RenderCopy(renderer, settingsButton.tex, NULL, &settingsButton.pos);
 			SDL_RenderCopy(renderer, quitButton.tex, NULL, &quitButton.pos);
+			SDL_RenderCopy(renderer, LevelButton.tex, NULL, &LevelButton.pos);
 			SDL_RenderPresent(renderer);
 		} while (event.type != SDL_MOUSEBUTTONDOWN);
 		
@@ -310,6 +428,9 @@ void Game::StartMenu() {
 			else if(Collision::Collide(tmp, quitButton.pos)){
 				isRunning = false;
 				return;
+			}
+			else if (Collision::Collide(tmp, LevelButton.pos)) {
+				LevelEditor();
 			}
 
 
